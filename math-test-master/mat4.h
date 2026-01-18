@@ -441,7 +441,34 @@ mat4 rotationz(float const rad)
 
 mat4 rotationaxis(vec3 const& v, float const rad)
 {
-	return mat4();
+	vec4 r0 = vec4(1.0f, 0.0f, 0.0f, -v.x);
+	vec4 r1 = vec4(0.0f, 1.0f, 0.0f, -v.y);
+	vec4 r2 = vec4(0.0f, 0.0f, 1.0f, -v.z);
+	vec4 r3 = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
+	mat4 translation = mat4(r0,r1,r2,r3);
+
+	vec4 s0 = vec4(1.0f, 0.0f, 0.0f, v.x);
+	vec4 s1 = vec4(0.0f, 1.0f, 0.0f, v.y);
+	vec4 s2 = vec4(0.0f, 0.0f, 1.0f, v.z);
+	vec4 s3 = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+
+	mat4 retranslation = mat4(s0, s1, s2, s3);
+
+	mat4 product = mat4();
+
+	float theta = atanf(v.x / v.z);
+	float phi = atanf(v.y / (sqrtf((v.x * v.x) + (v.z * v.z))));
+
+	product = product * translation;
+	product = product * rotationy(-theta);
+	product = product * rotationx(phi);
+	product = product * rotationz(rad);
+	product = product * rotationx(-phi);
+	product = product * rotationy(theta);
+	product = product * retranslation;
+
+
+	return transpose(product);
 }
 
